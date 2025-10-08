@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* Existing variables */
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -23,4 +24,50 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom animations */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+/* Theme classes and app background */
+.light-theme {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+.dark-theme {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+/* App-wide gradient background based on theme */
+.app-bg {
+  background: var(--background);
+}
+
+.light-theme .app-bg {
+  background-image: linear-gradient(to right, #f5f7ff, #ffffff);
+}
+
+.dark-theme .app-bg {
+  background-image: linear-gradient(to right, #05071A, #1A1635);
+}
+
+/* Text clamp utilities */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* number of lines to show */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
