@@ -5,7 +5,6 @@ export const runtime = "nodejs";
 
 const supabaseUrl = process.env.SUPABASE_URL as string;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export async function GET(req: Request) {
   try {
@@ -16,6 +15,7 @@ export async function GET(req: Request) {
       );
     }
 
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const table = process.env.SUPABASE_TABLE_PORTFOLIO || "portfolio_projects";
 
     // Support single-project fetch via ?id=<number>
@@ -70,6 +70,7 @@ export async function POST(request: Request) {
       );
     }
 
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const table = process.env.SUPABASE_TABLE_PORTFOLIO || "portfolio_projects";
     const body = await request.json();
 
