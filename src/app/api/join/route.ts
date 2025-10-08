@@ -42,13 +42,13 @@ export async function POST(req: Request) {
     }
 
     // Helper: ensure the storage bucket exists (requires Service Role Key)
-    const ensureBucketExists = async (client: ReturnType<typeof createClient>) => {
-      const { data: bucketInfo, error: getError } = await client.storage.getBucket(bucketName);
+    const ensureBucketExists = async () => {
+      const { data: bucketInfo, error: getError } = await supabase.storage.getBucket(bucketName);
       if (getError && !/not found|does not exist/i.test(getError.message)) {
         throw new Error(`Storage getBucket error: ${getError.message}`);
       }
       if (!bucketInfo) {
-        const { error: createError } = await client.storage.createBucket(bucketName, { public: true });
+        const { error: createError } = await supabase.storage.createBucket(bucketName, { public: true });
         if (createError) {
           throw new Error(`Storage bucket "${bucketName}" not found and could not be created: ${createError.message}`);
         }
@@ -66,23 +66,18 @@ export async function POST(req: Request) {
     let cover_letter = "";
     let resume_url: string | undefined;
 
-    const uploadToStorage = async (
-      buffer: Uint8Array,
-      filename: string,
-      mime: string,
-      client: ReturnType<typeof createClient>
-    ) => {
-      await ensureBucketExists(client);
+    const uploadToStorage = async (buffer: Uint8Array, filename: string, mime: string) => {
+      await ensureBucketExists();
       const ext = filename.split(".").pop() || "file";
       const path = `resumes/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const upload = await client.storage.from(bucketName).upload(path, buffer, {
+      const upload = await supabase.storage.from(bucketName).upload(path, buffer, {
         upsert: false,
         contentType: mime || "application/octet-stream",
       });
       if (upload.error) {
         throw new Error(`Storage upload failed: ${upload.error.message}`);
       }
-      const pub = client.storage.from(bucketName).getPublicUrl(path);
+      const pub = supabase.storage.from(bucketName).getPublicUrl(path);
       return pub.data.publicUrl;
     };
 
@@ -108,7 +103,7 @@ export async function POST(req: Request) {
         const rawB64 = commaIdx >= 0 ? base64.slice(commaIdx + 1) : base64;
         const buf = Buffer.from(rawB64, "base64");
         try {
-          resume_url = await uploadToStorage(new Uint8Array(buf), String(json.resumeName), String(json.resumeType), supabase);
+          resume_url = await uploadToStorage(new Uint8Array(buf), String(json.resumeName), String(json.resumeType));
         } catch (e: unknown) {
           const message = e instanceof Error ? e.message : "Upload failed";
           return NextResponse.json(
@@ -148,7 +143,7 @@ export async function POST(req: Request) {
       }
 
       const buffer = new Uint8Array(await resume.arrayBuffer());
-      resume_url = await uploadToStorage(buffer, resume.name, resume.type || "application/octet-stream", supabase);
+      resume_url = await uploadToStorage(buffer, resume.name, resume.type || "application/octet-stream");
     } else {
       return NextResponse.json(
         { ok: false, error: 'Content-Type must be "multipart/form-data", "application/x-www-form-urlencoded", or "application/json".' },
