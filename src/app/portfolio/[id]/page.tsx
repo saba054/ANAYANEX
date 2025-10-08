@@ -44,7 +44,7 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
     );
   }
 
-  const project = json.data;
+  const project: Project = json.data as Project;
 
   return (
     <div className="min-h-screen pt-20">
@@ -61,8 +61,11 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
             </p>
             <p className="text-[var(--foreground)] leading-relaxed mb-6">{project.description}</p>
             <div className="flex flex-wrap gap-2 mb-6">
-              {project.technologies.map((tech, index) => (
-                <span key={index} className="bg-[var(--background)]/40 border border-[var(--foreground)]/20 text-[var(--foreground)] opacity-80 px-2 py-1 rounded text-xs">
+              {project.technologies.map((tech: string, index: number) => (
+                <span
+                  key={index}
+                  className="bg-[var(--background)]/40 border border-[var(--foreground)]/20 text-[var(--foreground)] opacity-80 px-2 py-1 rounded text-xs"
+                >
                   {tech}
                 </span>
               ))}

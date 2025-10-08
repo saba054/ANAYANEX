@@ -179,24 +179,3 @@ export default function Navigation() {
     </nav>
   );
 }
-{/* Desktop navigation items */}
-<nav className="hidden md:flex items-center space-x-6">
-    <Link href="/" className="text-[var(--foreground)] hover:text-[var(--primary)] transition-colors">
-        Home
-    </Link>
-    <Link href="/portfolio/" className="text-[var(--foreground)] hover:text-[var(--primary)] transition-colors">
-        Portfolio
-    </Link>
-    {/* Add other internal links similarly */}
-</nav>
-
-{/* Mobile slide-down panel items */}
-<div className="md:hidden">
-    <Link href="/" className="block py-2 px-4 text-[var(--foreground)] hover:text-[var(--primary)]">
-        Home
-    </Link>
-    <Link href="/portfolio/" className="block py-2 px-4 text-[var(--foreground)] hover:text-[var(--primary)]">
-        Portfolio
-    </Link>
-    {/* Add other internal links similarly */}
-</div>
