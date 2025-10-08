@@ -55,8 +55,9 @@ export async function GET(req: Request) {
     }
 
     return NextResponse.json({ ok: true, data: data ?? [] }, { status: 200 });
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message || "Server error" }, { status: 500 });
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Server error";
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }
 
@@ -113,7 +114,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ ok: true, data }, { status: 201 });
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message || "Server error" }, { status: 500 });
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Server error";
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }

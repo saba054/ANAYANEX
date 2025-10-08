@@ -2,6 +2,7 @@
 
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export const runtime = 'nodejs';
 
@@ -42,14 +43,12 @@ export async function POST(req: Request) {
   
     // Helper: ensure the storage bucket exists (requires Service Role Key)
     const ensureBucketExists = async () => {
-      // Try to get bucket info
-      const { data: bucketInfo, error: getError } = await (supabase as any).storage.getBucket(bucketName);
-      if (getError) {
-        // If the API version returns error for missing bucket, ignore here and attempt creation
-        // Otherwise, surface the error if it's not a "not found" type
+      const { data: bucketInfo, error: getError } = await supabase.storage.getBucket(bucketName);
+      if (getError && !/not found|does not exist/i.test(getError.message)) {
+        throw new Error(`Storage getBucket error: ${getError.message}`);
       }
       if (!bucketInfo) {
-        const { error: createError } = await (supabase as any).storage.createBucket(bucketName, { public: true });
+        const { error: createError } = await supabase.storage.createBucket(bucketName, { public: true });
         if (createError) {
           throw new Error(`Storage bucket "${bucketName}" not found and could not be created: ${createError.message}`);
         }
@@ -68,9 +67,7 @@ export async function POST(req: Request) {
     let resume_url: string | undefined;
   
     const uploadToStorage = async (buffer: Uint8Array, filename: string, mime: string) => {
-      // Ensure bucket exists before uploading
       await ensureBucketExists();
-  
       const ext = filename.split(".").pop() || "file";
       const path = `resumes/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
       const upload = await supabase.storage.from(bucketName).upload(path, buffer, {

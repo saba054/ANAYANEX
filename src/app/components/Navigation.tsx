@@ -74,8 +74,8 @@ export default function Navigation() {
               <Image
                 src="/assets/images/1.png"
                 alt="ANAYANEX Logo"
-                width={90}
-                height={90}
+                width={60}
+                height={60}
                 className="object-contain"
                 priority
               />
@@ -86,7 +86,7 @@ export default function Navigation() {
           
           {/* Company name */}
           <div className="flex flex-col">
-            <span className="text-xl md:text-2xl font-bold text-[var(--foreground)] ml-[-10px]">ANAYANEX</span>
+            <span className="text-xl md:text-2xl font-bold text-[var(--foreground)] ml-[-6px]">ANAYANEX</span>
           </div>
         </div>
         
@@ -179,3 +179,24 @@ export default function Navigation() {
     </nav>
   );
 }
+{/* Desktop navigation items */}
+<nav className="hidden md:flex items-center space-x-6">
+    <Link href="/" className="text-[var(--foreground)] hover:text-[var(--primary)] transition-colors">
+        Home
+    </Link>
+    <Link href="/portfolio/" className="text-[var(--foreground)] hover:text-[var(--primary)] transition-colors">
+        Portfolio
+    </Link>
+    {/* Add other internal links similarly */}
+</nav>
+
+{/* Mobile slide-down panel items */}
+<div className="md:hidden">
+    <Link href="/" className="block py-2 px-4 text-[var(--foreground)] hover:text-[var(--primary)]">
+        Home
+    </Link>
+    <Link href="/portfolio/" className="block py-2 px-4 text-[var(--foreground)] hover:text-[var(--primary)]">
+        Portfolio
+    </Link>
+    {/* Add other internal links similarly */}
+</div>

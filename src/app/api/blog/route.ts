@@ -12,6 +12,26 @@ function getClient() {
   return createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 }
 
+type BlogPostInput = {
+  title: string;
+  category: string;
+  description: string;
+  image: string;
+  author: string;
+  date: string;
+  readtime?: string;
+  readTime?: string;
+};
+type BlogPostRow = {
+  title: string;
+  category: string;
+  description: string;
+  image: string;
+  author: string;
+  date: string;
+  readtime: string;
+};
+
 export async function GET(req: Request) {
   try {
     const supabase = getClient();
@@ -39,19 +59,24 @@ export async function GET(req: Request) {
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
     }
     return NextResponse.json({ ok: true, data });
-  } catch (err: any) {
-    return NextResponse.json({ ok: false, error: err.message || "Unexpected error" }, { status: 500 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unexpected error";
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
   try {
     const supabase = getClient();
-    const body = await req.json();
+    const bodyUnknown = (await req.json()) as unknown;
 
-    const normalize = (item: any) => {
-      const required = ["title", "category", "description", "image", "author", "date"];
-      const missing = required.filter((k) => item[k] === undefined || item[k] === null || item[k] === "");
+    const normalize = (itemUnknown: unknown): BlogPostRow => {
+      if (typeof itemUnknown !== "object" || itemUnknown === null) {
+        throw new Error("Invalid JSON body");
+      }
+      const item = itemUnknown as Partial<BlogPostInput>;
+      const required: Array<keyof BlogPostInput> = ["title", "category", "description", "image", "author", "date"];
+      const missing = required.filter((k) => !item[k]);
       if (missing.length) {
         throw new Error(`Missing fields: ${missing.join(", ")}`);
       }
@@ -62,13 +87,12 @@ export async function POST(req: Request) {
         image: String(item.image),
         author: String(item.author),
         date: String(item.date),
-        // DB column is 'readtime' (NOT NULL). Fallback if not provided.
         readtime: String(item.readtime ?? item.readTime ?? "5 min read"),
       };
     };
 
-    if (Array.isArray(body)) {
-      const payloads = body.map(normalize);
+    if (Array.isArray(bodyUnknown)) {
+      const payloads = bodyUnknown.map((it) => normalize(it));
       const { data, error } = await supabase.from(SUPABASE_TABLE_BLOG).insert(payloads).select();
       if (error) {
         return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
@@ -76,16 +100,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true, data }, { status: 201 });
     }
 
-    const payload = normalize(body);
+    const payload = normalize(bodyUnknown);
     const { data, error } = await supabase.from(SUPABASE_TABLE_BLOG).insert(payload).select().single();
     if (error) {
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
     }
     return NextResponse.json({ ok: true, data }, { status: 201 });
-  } catch (err: any) {
-    if (typeof err?.message === "string" && err.message.startsWith("Missing fields")) {
-      return NextResponse.json({ ok: false, error: err.message }, { status: 400 });
-    }
-    return NextResponse.json({ ok: false, error: err.message || "Unexpected error" }, { status: 500 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unexpected error";
+    const status = typeof message === "string" && message.startsWith("Missing fields") ? 400 : 500;
+    return NextResponse.json({ ok: false, error: message }, { status });
   }
 }
