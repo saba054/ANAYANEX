@@ -45,8 +45,9 @@ export default function JoinPage() {
 
       setSubmitted(true);
       form.reset();
-    } catch (err: any) {
-      setError(err?.message || "Something went wrong. Please try again.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      setError(message);
     } finally {
       setSubmitting(false);
     }

@@ -28,8 +28,9 @@ export default function PortfolioPage() {
         const json = await res.json();
         if (!res.ok || !json.ok) throw new Error(json.error || "Failed to load projects");
         setProjects(json.data || []);
-      } catch (err: any) {
-        setError(err?.message || "Failed to load projects");
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Failed to load projects";
+        setError(message);
       } finally {
         setLoading(false);
       }

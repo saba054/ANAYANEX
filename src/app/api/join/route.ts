@@ -104,9 +104,10 @@ export async function POST(req: Request) {
         const buf = Buffer.from(rawB64, "base64");
         try {
           resume_url = await uploadToStorage(new Uint8Array(buf), String(json.resumeName), String(json.resumeType));
-        } catch (e: any) {
+        } catch (e: unknown) {
+          const message = e instanceof Error ? e.message : "Upload failed";
           return NextResponse.json(
-            { ok: false, step: "upload", error: e?.message || "Upload failed", bucket: bucketName },
+            { ok: false, step: "upload", error: message, bucket: bucketName },
             { status: 500 }
           );
         }
@@ -203,17 +204,19 @@ export async function POST(req: Request) {
           { status: 500 }
         );
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : "Insert failed";
       return NextResponse.json(
-        { ok: false, step: "insert", error: e?.message || "Insert failed" },
+        { ok: false, step: "insert", error: message },
         { status: 500 }
       );
     }
 
     return NextResponse.json({ ok: true }, { status: 200 });
-  } catch (e: any) {
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Server error";
     return NextResponse.json(
-      { ok: false, error: e?.message || "Server error" },
+      { ok: false, error: message },
       { status: 500 }
     );
   }
@@ -241,9 +244,10 @@ export async function GET() {
       },
       { status: 200 }
     );
-  } catch (e: any) {
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Server error";
     return NextResponse.json(
-      { ok: false, error: e?.message || "Server error" },
+      { ok: false, error: message },
       { status: 500 }
     );
   }
