@@ -1,3 +1,5 @@
+// Module: contact API route
+
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
@@ -11,6 +13,11 @@ function escapeHtml(s: string) {
   return s.replace(/[&<>"']/g, (c) => {
     return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string;
   });
+}
+
+export async function GET(req: Request) {
+  // Redirect direct GET requests to the Contact page
+  return NextResponse.redirect(new URL("/contact", req.url));
 }
 
 export async function POST(req: Request) {

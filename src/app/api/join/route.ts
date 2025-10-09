@@ -10,6 +10,8 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 const bucketName = process.env.SUPABASE_BUCKET || "resumes";
 
 // File: route.ts (POST and GET handlers)
+// Module: join API route
+
 export async function POST(req: Request) {
   try {
     // Validate Supabase credentials early (avoid undefined client causing runtime errors)
@@ -187,7 +189,6 @@ export async function POST(req: Request) {
     );
   }
 }
-
 export async function GET() {
   try {
     if (!supabaseUrl || !supabaseServiceKey) {

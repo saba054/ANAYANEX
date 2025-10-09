@@ -1,0 +1,7 @@
+SUPABASE_URL=https://oskyqihvlaeksrcszvnj.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9za3lxaWh2bGFla3NyY3N6dm5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc1MDkyNiwiZXhwIjoyMDc1MzI2OTI2fQ.4i5K2OGzfIJs8a299KfsbxK-SXU2-ghjOiXVdW0VBoQ
+SUPABASE_BUCKET=resumes
+SUPABASE_TABLE=applications
+GMAIL_USER="sababcs054@gmail.com"
+GMAIL_APP_PASSWORD="aijd yody sdhd wvkc"  # 16-char app password from Google
+HOST_TO_EMAIL="sabarasheed458@gmail.com"   # optional
