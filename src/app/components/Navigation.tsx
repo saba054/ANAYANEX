@@ -95,6 +95,7 @@ export default function Navigation() {
           <Link href="/about" className="text-[var(--foreground)] hover:opacity-80 transition-colors">About Us</Link>
           <Link href="/portfolio" className="text-[var(--foreground)] hover:opacity-80 transition-colors">Portfolio</Link>
           <Link href="/services" className="text-[var(--foreground)] hover:opacity-80 transition-colors">Services</Link>
+          <Link href="/contact" className="hover:text-gray-900">Contact</Link>
           <Link href="/blog" className="text-[var(--foreground)] hover:opacity-80 transition-colors">Blog</Link>
         </div>
 
@@ -166,6 +167,9 @@ export default function Navigation() {
             <Link href="/about" className="block text-[var(--foreground)] py-2">About Us</Link>
             <Link href="/portfolio" className="block text-[var(--foreground)] py-2">Portfolio</Link>
             <Link href="/services" className="block text-[var(--foreground)] py-2">Services</Link>
+            <Link href="/contact" className="hover:text-gray-900">
+                  Contact
+                </Link>
             <Link href="/blog" className="block text-[var(--foreground)] py-2">Blog</Link>
             <Link
               href="/join"
@@ -173,6 +177,7 @@ export default function Navigation() {
             >
               Join Our Team
             </Link>
+            
           </div>
         </div>
       )}
