@@ -87,25 +87,25 @@ export async function POST(req: Request) {
   `;
 
   try {
-    // Send to company owner
+    // Send to company owner (host)
     await transporter.sendMail({
       from: `"AnayaNex Contact" <${GMAIL_USER}>`,
       to: HOST_TO_EMAIL,
       replyTo: email, // dynamic user's email
-      subject: `[Contact] ${subject}`,
+      subject: adminSubject, // ensure this is used
       html: adminHtml,
     });
+
+    // Send confirmation to the user
     await transporter.sendMail({
       from: `"AnayaNex" <${GMAIL_USER}>`,
       to: email, // dynamic user's email
       subject: "We received your message",
       html: userHtml,
     });
-  } catch (err: any) {
-    return NextResponse.json(
-      { ok: false, error: err?.message ?? String(err) },
-      { status: 500 }
-    );
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Unexpected error";
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 
   // redirect or JSON based on request type
