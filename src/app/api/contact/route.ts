@@ -1,114 +1,119 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import nodemailer from "nodemailer";
 
 export const runtime = "nodejs";
 
-const supabaseUrl = process.env.SUPABASE_URL as string;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
-const table = process.env.SUPABASE_CONTACT_TABLE || "contacts";
+const GMAIL_USER = process.env.GMAIL_USER;
+const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
+const HOST_TO_EMAIL = process.env.HOST_TO_EMAIL ?? "sababcs054@gmail.com";
 
-export async function POST(req: Request) {
-  try {
-    if (!supabaseUrl || !supabaseServiceKey) {
-      return NextResponse.json(
-        { ok: false, error: "Supabase credentials are not configured. Ensure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set." },
-        { status: 500 }
-      );
-    }
-
-    // Create client after env validation
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Optional: verify that the key looks like a service_role (not anon)
-    try {
-      const parts = supabaseServiceKey.split(".");
-      if (parts.length === 3) {
-        const payloadJson = Buffer.from(parts[1], "base64").toString("utf-8");
-        const payload = JSON.parse(payloadJson);
-        if (payload.role !== "service_role") {
-          return NextResponse.json(
-            { ok: false, error: "Provided SUPABASE_SERVICE_ROLE_KEY appears to be an anon key. Use the Service Role Key." },
-            { status: 500 }
-          );
-        }
-      }
-    } catch {
-      // Continue; invalid tokens will surface clearer errors on insert
-    }
-
-    const contentType = req.headers.get("content-type") || "";
-    const accept = req.headers.get("accept") || "";
-
-    let name = "";
-    let email = "";
-    let subject = "";
-    let message = "";
-
-    if (contentType.includes("application/json")) {
-      const json = await req.json();
-      name = String(json.name || "").trim();
-      email = String(json.email || "").trim();
-      subject = String(json.subject || "").trim();
-      message = String(json.message || "").trim();
-    } else {
-      const form = await req.formData();
-      name = String(form.get("name") || "").trim();
-      email = String(form.get("email") || "").trim();
-      subject = String(form.get("subject") || "").trim();
-      message = String(form.get("message") || "").trim();
-    }
-
-    if (!name || !email || !subject || !message) {
-      return NextResponse.json({ ok: false, error: "Please provide name, email, subject, and message." }, { status: 400 });
-    }
-
-    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    if (!emailOk) {
-      return NextResponse.json({ ok: false, error: "Please provide a valid email address." }, { status: 400 });
-    }
-
-    const insert = await supabase.from(table).insert({ name, email, subject, message });
-    if (insert.error) {
-      return NextResponse.json({ ok: false, step: "insert", error: insert.error.message, table }, { status: 500 });
-    }
-
-    // JSON-first: if JSON input or client expects JSON, return JSON
-    if (contentType.includes("application/json") || accept.includes("application/json")) {
-      return NextResponse.json({ ok: true }, { status: 200 });
-    }
-
-    // Otherwise, redirect back to contact page with success banner for browser form submits
-    const url = new URL("/contact?success=1", req.url);
-    return NextResponse.redirect(url, 303);
-  } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : "Server error";
-    return NextResponse.json({ ok: false, error: msg }, { status: 500 });
-  }
+function escapeHtml(s: string) {
+  return s.replace(/[&<>"']/g, (c) => {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string;
+  });
 }
 
-export async function GET(req: Request) {
-  try {
-    if (!supabaseUrl || !supabaseServiceKey) {
-      return NextResponse.json(
-        { ok: false, error: "Supabase credentials are not configured. Ensure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set." },
-        { status: 500 }
-      );
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    const { data, error } = await supabase
-      .from(table)
-      .select("id,name,email,subject,message,created_at")
-      .order("created_at", { ascending: false })
-      .limit(10);
-
-    if (error) {
-      return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
-    }
-
-    return NextResponse.json({ ok: true, count: data?.length ?? 0, data }, { status: 200 });
-  } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : "Server error";
-    return NextResponse.json({ ok: false, error: msg }, { status: 500 });
+export async function POST(req: Request) {
+  const missing: string[] = [];
+  if (!GMAIL_USER) missing.push("GMAIL_USER");
+  if (!GMAIL_APP_PASSWORD) missing.push("GMAIL_APP_PASSWORD");
+  if (missing.length > 0) {
+    return NextResponse.json(
+      { ok: false, error: `Missing ${missing.join(", ")}` },
+      { status: 500 }
+    );
   }
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: { user: GMAIL_USER, pass: GMAIL_APP_PASSWORD },
+  });
+
+  const contentType = req.headers.get("content-type") || "";
+  const isJson = contentType.includes("application/json");
+
+  let name = "";
+  let email = "";
+  let subject = "";
+  let message = "";
+
+  if (isJson) {
+    const body = await req.json();
+    name = (body.name || "").trim();
+    email = (body.email || "").trim();
+    subject = (body.subject || "").trim();
+    message = (body.message || "").trim();
+  } else {
+    const form = await req.formData();
+    name = String(form.get("name") || "").trim();
+    email = String(form.get("email") || "").trim();
+    subject = String(form.get("subject") || "").trim();
+    message = String(form.get("message") || "").trim();
+  }
+
+  // ✅ validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return NextResponse.json({ ok: false, error: "Invalid email" }, { status: 400 });
+  }
+
+  // ✅ Email content for admin
+  const adminSubject = `[Contact] ${subject || "No subject"}`;
+  const adminHtml = `
+    <div style="font-family: Arial, sans-serif;">
+      <h2>New Contact Request</h2>
+      <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+      <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
+      <p><strong>Message:</strong></p>
+      <pre style="white-space:pre-wrap; font-family: inherit;">${escapeHtml(message)}</pre>
+    </div>
+  `;
+
+  // ✅ Email content for user confirmation
+  const userHtml = `
+    <div style="font-family: Arial, sans-serif;">
+      <h2>Thanks for contacting AnayaNex</h2>
+      <p>Hi ${escapeHtml(name)},</p>
+      <p>We have received your request successfully. Our team will get back to you shortly.</p>
+      <p><strong>Your subject:</strong> ${escapeHtml(subject)}</p>
+      <p><strong>Your message:</strong></p>
+      <pre style="white-space:pre-wrap; font-family: inherit;">${escapeHtml(message)}</pre>
+      <br />
+      <p>— The AnayaNex Team</p>
+    </div>
+  `;
+
+  try {
+    // Send to company owner
+    await transporter.sendMail({
+      from: `"AnayaNex Contact" <${GMAIL_USER}>`,
+      to: HOST_TO_EMAIL,
+      replyTo: email, // dynamic user's email
+      subject: `[Contact] ${subject}`,
+      html: adminHtml,
+    });
+    await transporter.sendMail({
+      from: `"AnayaNex" <${GMAIL_USER}>`,
+      to: email, // dynamic user's email
+      subject: "We received your message",
+      html: userHtml,
+    });
+  } catch (err: any) {
+    return NextResponse.json(
+      { ok: false, error: err?.message ?? String(err) },
+      { status: 500 }
+    );
+  }
+
+  // redirect or JSON based on request type
+  const accept = req.headers.get("accept") || "";
+  const isBrowserForm = !isJson && accept.includes("text/html");
+  if (isBrowserForm) {
+    return NextResponse.redirect(new URL("/contact?success=1", req.url));
+  }
+
+  return NextResponse.json({ ok: true }, { status: 200 });
 }

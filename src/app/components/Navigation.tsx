@@ -95,7 +95,7 @@ export default function Navigation() {
           <Link href="/about" className="text-[var(--foreground)] hover:opacity-80 transition-colors">About Us</Link>
           <Link href="/portfolio" className="text-[var(--foreground)] hover:opacity-80 transition-colors">Portfolio</Link>
           <Link href="/services" className="text-[var(--foreground)] hover:opacity-80 transition-colors">Services</Link>
-          <Link href="/contact" className="hover:text-gray-900">Contact</Link>
+          <Link href="/contact" className="text-[var(--foreground)] hover:opacity-80 transition-colors">Contact</Link>
           <Link href="/blog" className="text-[var(--foreground)] hover:opacity-80 transition-colors">Blog</Link>
         </div>
 

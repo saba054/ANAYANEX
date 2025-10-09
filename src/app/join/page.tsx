@@ -54,92 +54,77 @@ export default function JoinPage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[var(--background)]">
       <Navigation />
       <div className="pt-20">
-        {/* Your existing join page content (form, headings, etc.) */}
-        {/* Keep everything as-is; just wrapped with padding to avoid navbar overlap */}
-        {/* Existing JSX follows */}
-        <div className="pt-24 pb-16 px-6">
+        <div className="px-4 sm:px-6 lg:px-8 pt-10 pb-16">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-10">
-              <h1 className="text-4xl font-bold text-[var(--foreground)]">Join ANAYANEX</h1>
-              <p className="text-[var(--foreground)]/80 mt-3">
+            <div className="text-center mb-8 sm:mb-10">
+              <h1 className="text-3xl sm:text-4xl font-bold text-[var(--foreground)]">Join ANAYANEX</h1>
+              <p className="text-[var(--foreground)]/80 mt-3 text-sm sm:text-base">
                 Apply to join our team. We&apos;re looking for passionate people who love building great products.
               </p>
             </div>
 
             {submitted && (
-              <div className="mb-8 rounded-xl border border-[var(--foreground)]/20 bg-[var(--background)]/70 p-4 text-[var(--foreground)]">
+              <div className="mb-6 sm:mb-8 rounded-xl border border-[var(--foreground)]/20 bg-[var(--background)]/70 p-4 sm:p-5 text-[var(--foreground)]">
                 <p className="font-semibold">Thank you for applying!</p>
-                <p className="text-[var(--foreground)]/80">
+                <p className="text-[var(--foreground)]/80 text-sm sm:text-base">
                   Your application has been received. Our team will reach out to you if your profile matches our requirements.
                 </p>
               </div>
             )}
+
             {error && (
-              <div className="mb-8 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-red-600 dark:text-red-400">
+              <div className="mb-6 sm:mb-8 rounded-xl border border-red-500/40 bg-red-500/10 p-4 sm:p-5 text-red-600 dark:text-red-400 text-sm sm:text-base">
                 {error}
               </div>
             )}
-            <form
-              onSubmit={handleSubmit}
-              encType="multipart/form-data"
-              className="rounded-2xl border border-[var(--foreground)]/20 bg-[var(--background)]/60 p-6 shadow-lg"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-[var(--foreground)]">
-                    Full Name
-                  </label>
+                  <label htmlFor="name" className="block text-sm font-medium text-[var(--foreground)]">Full Name</label>
                   <input
                     id="name"
                     name="name"
                     type="text"
                     required
-                    className="mt-2 w-full rounded-lg border border-[var(--foreground)]/20 bg-[var(--background)]/80 px-3 py-2 text-[var(--foreground)] placeholder-[var(--foreground)]/40 focus:outline-none focus:ring-2 focus:ring-[var(--foreground)]/30"
-                    placeholder="John Doe"
+                    className="mt-2 block w-full rounded-lg border border-[var(--foreground)]/20 bg-[var(--background)] px-3 py-2 text-[var(--foreground)] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[var(--foreground)]/30"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-[var(--foreground)]">
-                    Email
-                  </label>
+                  <label htmlFor="email" className="block text-sm font-medium text-[var(--foreground)]">Email</label>
                   <input
                     id="email"
                     name="email"
                     type="email"
                     required
-                    className="mt-2 w-full rounded-lg border border-[var(--foreground)]/20 bg-[var(--background)]/80 px-3 py-2 text-[var(--foreground)] placeholder-[var(--foreground)]/40 focus:outline-none focus:ring-2 focus:ring-[var(--foreground)]/30"
-                    placeholder="john@example.com"
+                    className="mt-2 block w-full rounded-lg border border-[var(--foreground)]/20 bg-[var(--background)] px-3 py-2 text-[var(--foreground)] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[var(--foreground)]/30"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-[var(--foreground)]">
-                    Phone
-                  </label>
+                  <label htmlFor="phone" className="block text-sm font-medium text-[var(--foreground)]">Phone</label>
                   <input
                     id="phone"
                     name="phone"
                     type="tel"
-                    className="mt-2 w-full rounded-lg border border-[var(--foreground)]/20 bg-[var(--background)]/80 px-3 py-2 text-[var(--foreground)] placeholder-[var(--foreground)]/40 focus:outline-none focus:ring-2 focus:ring-[var(--foreground)]/30"
-                    placeholder="+92 555 000 123"
+                    required
+                    className="mt-2 block w-full rounded-lg border border-[var(--foreground)]/20 bg-[var(--background)] px-3 py-2 text-[var(--foreground)] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[var(--foreground)]/30"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="position" className="block text-sm font-medium text-[var(--foreground)]">
-                    Position
-                  </label>
+                  <label htmlFor="position" className="block text-sm font-medium text-[var(--foreground)]">Position</label>
                   <select
                     id="position"
                     name="position"
                     required
-                    className="mt-2 w-full rounded-lg border border-[var(--foreground)]/20 bg-[var(--background)]/80 px-3 py-2 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--foreground)]/30"
+                    className="mt-2 block w-full rounded-lg border border-[var(--foreground)]/20 bg-[var(--background)] px-3 py-2 text-[var(--foreground)] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[var(--foreground)]/30"
                   >
-                    <option value="">Select a role</option>
+                    <option value="">Select a position</option>
                     <option>Frontend Developer</option>
                     <option>Backend Developer</option>
                     <option>Full Stack Developer</option>
@@ -152,75 +137,68 @@ export default function JoinPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="linkedin" className="block text-sm font-medium text-[var(--foreground)]">
-                    LinkedIn URL
-                  </label>
+                  <label htmlFor="linkedin" className="block text-sm font-medium text-[var(--foreground)]">LinkedIn URL</label>
                   <input
                     id="linkedin"
                     name="linkedin"
                     type="url"
-                    className="mt-2 w-full rounded-lg border border-[var(--foreground)]/20 bg-[var(--background)]/80 px-3 py-2 text-[var(--foreground)] placeholder-[var(--foreground)]/40 focus:outline-none focus:ring-2 focus:ring-[var(--foreground)]/30"
-                    placeholder="https://linkedin.com/in/your-profile"
+                    required
+                    className="mt-2 block w-full rounded-lg border border-[var(--foreground)]/20 bg-[var(--background)] px-3 py-2 text-[var(--foreground)] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[var(--foreground)]/30"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="portfolio" className="block text-sm font-medium text-[var(--foreground)]">
-                    Portfolio URL 
-                  </label>
+                  <label htmlFor="portfolio" className="block text-sm font-medium text-[var(--foreground)]">Portfolio URL</label>
                   <input
                     id="portfolio"
                     name="portfolio"
                     type="url"
-                    className="mt-2 w-full rounded-lg border border-[var(--foreground)]/20 bg-[var(--background)]/80 px-3 py-2 text-[var(--foreground)] placeholder-[var(--foreground)]/40 focus:outline-none focus:ring-2 focus:ring-[var(--foreground)]/30"
-                    placeholder="https://your-portfolio.com"
+                    required
+                    className="mt-2 block w-full rounded-lg border border-[var(--foreground)]/20 bg-[var(--background)] px-3 py-2 text-[var(--foreground)] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[var(--foreground)]/30"
                   />
                 </div>
+              </div>
 
-                <div className="md:col-span-2">
-                  <label htmlFor="resume" className="block text-sm font-medium text-[var(--foreground)]">
-                    Resume (PDF, DOC, DOCX)
-                  </label>
+              <div className="grid grid-cols-1 gap-4 sm:gap-6">
+                <div>
+                  <label htmlFor="resume" className="block text-sm font-medium text-[var(--foreground)]">Resume</label>
                   <input
                     id="resume"
                     name="resume"
                     type="file"
                     required
                     accept=".pdf,.doc,.docx"
-                    className="mt-2 w-full rounded-lg border border-[var(--foreground)]/20 bg-[var(--background)]/80 px-3 py-2 text-[var(--foreground)] file:bg-[var(--foreground)] file:text-[var(--background)] file:border-0 file:px-4 file:py-2 file:rounded-md"
+                    className="mt-2 block w-full rounded-lg border border-[var(--foreground)]/20 bg-[var(--background)] px-3 py-2 text-[var(--foreground)] text-sm sm:text-base file:mr-4 file:rounded-md file:border-0 file:bg-[var(--foreground)] file:px-3 file:py-2 file:text-[var(--background)] hover:file:bg-[var(--foreground)]/90"
                   />
                 </div>
 
-                <div className="md:col-span-2">
-                  <label htmlFor="coverLetter" className="block text-sm font-medium text-[var(--foreground)]">
-                    Cover Letter (optional)
-                  </label>
+                <div>
+                  <label htmlFor="coverLetter" className="block text-sm font-medium text-[var(--foreground)]">Cover Letter (optional)</label>
                   <textarea
                     id="coverLetter"
                     name="coverLetter"
-                    rows={6}
-                    className="mt-2 w-full rounded-lg border border-[var(--foreground)]/20 bg-[var(--background)]/80 px-3 py-2 text-[var(--foreground)] placeholder-[var(--foreground)]/40 focus:outline-none focus:ring-2 focus:ring-[var(--foreground)]/30"
-                    placeholder="Tell us why you'd be a great fit at ANAYANEX..."
+                    rows={4}
+                    className="mt-2 block w-full rounded-lg border border-[var(--foreground)]/20 bg-[var(--background)] px-3 py-2 text-[var(--foreground)] text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[var(--foreground)]/30"
                   />
                 </div>
               </div>
 
-              <div className="mt-8 flex items-center justify-between">
-                <p className="text-[var(--foreground)]/70 text-sm">
-                  By submitting, you agree to our processing of your data for recruitment purposes.
-                </p>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="bg-[var(--foreground)] text-[var(--background)] px-6 py-2 rounded-full font-semibold hover:opacity-90 transition-colors disabled:opacity-60"
+                  aria-busy={submitting}
+                  className="inline-flex justify-center rounded-full bg-[var(--foreground)] px-5 py-2.5 text-[var(--background)] text-sm sm:text-base font-semibold transition-colors hover:bg-[var(--foreground)]/90 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {submitting ? "Submitting..." : "Submit Application"}
                 </button>
+                {/* Removed misplaced FooterSection inside button row */}
               </div>
             </form>
           </div>
         </div>
       </div>
+      {/* Footer placed inside the root container to avoid parse errors */}
       <div className="pt-20">
         <FooterSection />
       </div>
